@@ -1,0 +1,17 @@
+# Normalize line endings for cross-platform consistency
+* text=auto eol=lf
+
+# Windows-specific scripts keep CRLF
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.svg text
