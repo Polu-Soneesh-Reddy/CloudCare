@@ -1,0 +1,72 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: cloudcare-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-cloudcare}
+      POSTGRES_USER: ${POSTGRES_USER:-cloudcare}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cloudcare_dev_password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-cloudcare} -d ${POSTGRES_DB:-cloudcare}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cloudcare-backend
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-cloudcare}:${POSTGRES_PASSWORD:-cloudcare_dev_password}@postgres:5432/${POSTGRES_DB:-cloudcare}
+      SECRET_KEY: ${SECRET_KEY:-dev_secret_key_change_in_production}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173,http://localhost:80,http://localhost}
+      APP_VERSION: ${APP_VERSION:-1.0.0}
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    restart: unless-stopped
+    volumes:
+      - ./backend:/app:ro
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8000}
+    container_name: cloudcare-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:80/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  default:
+    name: cloudcare-network

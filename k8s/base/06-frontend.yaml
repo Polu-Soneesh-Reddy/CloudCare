@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudcare-frontend
+  namespace: cloudcare
+  labels:
+    app: cloudcare-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cloudcare-frontend
+  template:
+    metadata:
+      labels:
+        app: cloudcare-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: YOUR_DOCKERHUB_USERNAME/cloudcare-frontend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "50m"
+            limits:
+              memory: "64Mi"
+              cpu: "100m"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 15
+            periodSeconds: 20
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cloudcare-frontend
+  namespace: cloudcare
+spec:
+  selector:
+    app: cloudcare-frontend
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30080
+  type: NodePort
+  # Access via: http://EC2_PUBLIC_IP:30080
+  # Ensure AWS Security Group allows port 30080 inbound

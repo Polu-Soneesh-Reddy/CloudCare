@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cloudcare-backend-active
+  namespace: cloudcare
+  annotations:
+    deployment.cloudcare.io/active-version: "blue"  # Update this during switch
+spec:
+  selector:
+    app: cloudcare-backend
+    version: blue  # This line changes to 'green' when switching traffic
+  ports:
+    - port: 8000
+      targetPort: 8000
+  type: ClusterIP

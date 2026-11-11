@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudcare-backend-green
+  namespace: cloudcare
+  labels:
+    app: cloudcare-backend
+    version: green
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cloudcare-backend
+      version: green
+  template:
+    metadata:
+      labels:
+        app: cloudcare-backend
+        version: green
+        release: v2
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+      containers:
+        - name: backend
+          image: YOUR_DOCKERHUB_USERNAME/cloudcare-backend:v2
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: cloudcare-secrets
+                  key: DATABASE_URL
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: cloudcare-secrets
+                  key: SECRET_KEY
+            - name: APP_VERSION
+              value: "2.0.0-green"
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "384Mi"
+              cpu: "500m"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 20

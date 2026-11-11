@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cloudcare-config
+  namespace: cloudcare
+data:
+  APP_VERSION: "1.0.0"
+  POSTGRES_DB: "cloudcare"
+  POSTGRES_USER: "cloudcare"
+  CORS_ORIGINS: "http://YOUR_EC2_PUBLIC_IP"

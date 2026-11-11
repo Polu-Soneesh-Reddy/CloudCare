@@ -1,0 +1,68 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+build/
+dist/
+*.egg-info/
+*.egg
+.venv/
+venv/
+env/
+.pytest_cache/
+*.pyc
+.eggs/
+test.db
+junit*.xml
+build.log
+
+# Node
+node_modules/
+dist/
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment
+.env
+*.env
+!.env.example
+
+# Docker
+.dockerignore
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*.DS_Store
+Thumbs.db
+
+# Security
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_ecdsa
+id_ed25519
+
+# Trivy reports
+trivy-results*.json
+trivy-results*.sarif
+security-reports/
+
+# Bandit reports
+bandit-report*.json
+
+# Coverage
+.coverage
+htmlcov/
+coverage.xml
