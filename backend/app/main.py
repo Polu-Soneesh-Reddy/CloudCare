@@ -38,9 +38,6 @@ async def lifespan(app: FastAPI):
         Base.metadata.create_all(bind=engine)
     except Exception as exc:
         print(f"Warning: Database initialization encountered an error: {exc}")
-    # Start Prometheus metrics collection
-    if PROMETHEUS_ENABLED:
-        Instrumentator().instrument(app).expose(app, include_in_schema=False, tags=["monitoring"])
     yield
 
 
@@ -74,6 +71,10 @@ app.include_router(queue.router, prefix="/api/v1")
 app.include_router(analytics.router, prefix="/api/v1")
 app.include_router(notifications.router, prefix="/api/v1")
 app.include_router(clinic_settings.router, prefix="/api/v1")
+
+# Prometheus metrics — must be called at module level, before app starts
+if PROMETHEUS_ENABLED:
+    Instrumentator().instrument(app).expose(app, include_in_schema=False, tags=["monitoring"])
 
 
 @app.get("/", include_in_schema=False)

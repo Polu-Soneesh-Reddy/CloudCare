@@ -45,4 +45,3 @@ groups:
         annotations:
           summary: "Low disk space on {{ $labels.instance }}"
           description: "Only {{ $value }}% disk space remaining"
-``

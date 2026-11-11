@@ -42,4 +42,4 @@ output "jenkins_url" {
   description = "Jenkins URL"
   value       = "http://${aws_eip.cloudcare.public_ip}:8080"
 }
-``
+

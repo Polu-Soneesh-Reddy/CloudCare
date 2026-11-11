@@ -52,4 +52,4 @@ chown -R ubuntu:ubuntu "$HOME_DIR"
 # ── Completion Marker ──
 echo "=== Bootstrap Complete $(date) ===" > /tmp/bootstrap_done.txt
 echo "Bootstrap done. App directory: $APP_DIR"
-``
+`

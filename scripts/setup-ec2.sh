@@ -41,4 +41,4 @@ echo "AWS CLI: $(aws --version)"
 echo ""
 echo "IMPORTANT: Log out and back in for docker group to take effect."
 echo "Then run: bash deploy-aws.sh"
-``
+`

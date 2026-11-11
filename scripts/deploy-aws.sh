@@ -77,4 +77,4 @@ echo "  Login:      admin@cloudcare.demo / demo1234"
 echo "============================================"
 
 docker compose ps
-``
+`

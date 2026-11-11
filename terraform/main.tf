@@ -137,9 +137,23 @@ resource "aws_key_pair" "cloudcare" {
   tags       = { Project = var.project_name }
 }
 
+# ─── Latest Ubuntu 22.04 LTS AMI ──────────────────────
+data "aws_ami" "ubuntu" {
+  most_recent = true
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
+  }
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+  owners = ["099720109477"] # Canonical
+}
+
 # ─── EC2 Instance ─────────────────────────────────────
 resource "aws_instance" "cloudcare" {
-  ami                    = var.ami_id
+  ami                    = data.aws_ami.ubuntu.id
   instance_type          = var.instance_type
   key_name               = aws_key_pair.cloudcare.key_name
   subnet_id              = aws_subnet.public.id
@@ -173,4 +187,4 @@ resource "aws_eip" "cloudcare" {
   domain   = "vpc"
   tags     = { Name = "${var.project_name}-eip", Project = var.project_name }
 }
-``
+

@@ -66,3 +66,9 @@ bandit-report*.json
 .coverage
 htmlcov/
 coverage.xml
+
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!terraform.tfvars.example
