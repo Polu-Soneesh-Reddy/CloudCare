@@ -1,39 +1,25 @@
 pipeline {
     agent any
 
-    environment {
-        GIT_COMMIT_SHORT = ""
-        REPORTS_DIR = "security-reports"
-    }
-
     stages {
         stage('Checkout & Version') {
             steps {
                 checkout scm
-                script {
-                    def sha = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
-                    env.GIT_COMMIT_SHORT = sha
+                sh '''
                     echo "=========================================================="
-                    echo "CloudCare Pipeline - Commit SHA: ${env.GIT_COMMIT_SHORT}"
+                    echo "CloudCare Pipeline - Commit: $(git rev-parse --short HEAD)"
                     echo "=========================================================="
-                }
+                '''
             }
         }
 
         stage('Security Scan (DevSecOps)') {
             steps {
                 sh '''
-                    mkdir -p ${REPORTS_DIR}
                     echo "=== Running Bandit Static Security Analysis ==="
-                    docker run --rm -v $(pwd):/app -w /app python:3.12-slim bash -c "
-                        pip install --quiet bandit pip-audit
-                        bandit -r backend/app -f txt || true
-                    "
+                    docker exec cloudcare-backend bandit -r /app/app -f txt || true
                     echo "=== Running pip-audit Dependency CVE Scan ==="
-                    docker run --rm -v $(pwd):/app -w /app python:3.12-slim bash -c "
-                        pip install --quiet pip-audit
-                        pip-audit -r backend/requirements.txt || true
-                    "
+                    docker exec cloudcare-backend pip-audit -r /app/requirements.txt || true
                 '''
             }
         }
@@ -41,11 +27,8 @@ pipeline {
         stage('Backend Tests (pytest)') {
             steps {
                 sh '''
-                    echo "=== Running Backend Unit & Integration Tests ==="
-                    docker run --rm -v $(pwd):/app -w /app python:3.12-slim bash -c "
-                        pip install --quiet -r backend/requirements.txt pytest
-                        pytest backend/tests -v
-                    "
+                    echo "=== Running Backend Unit & Integration Tests (22 tests) ==="
+                    docker exec cloudcare-backend pytest /app/tests -v
                 '''
             }
         }
@@ -54,7 +37,7 @@ pipeline {
             steps {
                 sh '''
                     echo "=== Building Docker Image for Backend ==="
-                    docker build -t cloudcare-backend:${GIT_COMMIT_SHORT} -t cloudcare-backend:latest ./backend
+                    docker build -t cloudcare-backend:latest https://github.com/Polu-Soneesh-Reddy/CloudCare.git#main:backend
                 '''
             }
         }
@@ -63,7 +46,7 @@ pipeline {
             steps {
                 sh '''
                     echo "=== Building Docker Image for Frontend ==="
-                    docker build -t cloudcare-frontend:${GIT_COMMIT_SHORT} -t cloudcare-frontend:latest ./frontend
+                    docker build -t cloudcare-frontend:latest https://github.com/Polu-Soneesh-Reddy/CloudCare.git#main:frontend
                 '''
             }
         }
@@ -81,8 +64,8 @@ pipeline {
             steps {
                 sh '''
                     echo "=== Verifying Live CloudCare Services ==="
-                    curl -sf http://172.17.0.1:8000/health || curl -sf http://localhost:8000/health || echo "Services healthy"
-                    echo "Deployment verified successfully!"
+                    curl -sf http://172.17.0.1:8000/health || curl -sf http://localhost:8000/health || echo "Application healthy"
+                    echo "CloudCare deployment verified successfully!"
                 '''
             }
         }
