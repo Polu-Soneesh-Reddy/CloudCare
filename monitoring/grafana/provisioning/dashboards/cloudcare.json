@@ -1,0 +1,93 @@
+{
+  "__inputs": [],
+  "__elements": {},
+  "__requires": [
+    {"type": "grafana", "id": "grafana", "name": "Grafana", "version": "10.0.0"},
+    {"type": "datasource", "id": "prometheus", "name": "Prometheus", "version": "1.0.0"}
+  ],
+  "annotations": {"list": []},
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "fieldConfig": {
+        "defaults": {"color": {"mode": "thresholds"}, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 10}, {"color": "red", "value": 50}]}}
+      },
+      "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0},
+      "id": 1,
+      "options": {"colorMode": "background", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "auto"},
+      "title": "Request Rate (req/s)",
+      "type": "stat",
+      "targets": [{"datasource": {"type": "prometheus"}, "expr": "sum(rate(http_requests_total{job=\"cloudcare-backend\"}[5m]))", "legendFormat": "Requests/s"}]
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "unit": "s"}},
+      "gridPos": {"h": 8, "w": 12, "x": 6, "y": 0},
+      "id": 2,
+      "options": {"legend": {"calcs": [], "displayMode": "list", "placement": "bottom"}, "tooltip": {"mode": "single"}},
+      "title": "API Response Time (p95)",
+      "type": "timeseries",
+      "targets": [{"datasource": {"type": "prometheus"}, "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job=\"cloudcare-backend\"}[5m])) by (le))", "legendFormat": "p95 latency"}]
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "fieldConfig": {"defaults": {"color": {"mode": "thresholds"}, "unit": "percent", "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 60}, {"color": "red", "value": 80}]}}},
+      "gridPos": {"h": 4, "w": 6, "x": 0, "y": 4},
+      "id": 3,
+      "options": {"colorMode": "background", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "auto"},
+      "title": "CPU Usage %",
+      "type": "stat",
+      "targets": [{"datasource": {"type": "prometheus"}, "expr": "100 - (avg(rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)", "legendFormat": "CPU %"}]
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "fieldConfig": {"defaults": {"color": {"mode": "thresholds"}, "unit": "percent", "max": 100, "min": 0, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 70}, {"color": "red", "value": 85}]}}},
+      "gridPos": {"h": 8, "w": 6, "x": 18, "y": 0},
+      "id": 4,
+      "options": {"orientation": "auto", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "showThresholdLabels": false, "showThresholdMarkers": true},
+      "title": "Memory Usage %",
+      "type": "gauge",
+      "targets": [{"datasource": {"type": "prometheus"}, "expr": "(node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100", "legendFormat": "Memory %"}]
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}}},
+      "gridPos": {"h": 8, "w": 12, "x": 6, "y": 8},
+      "id": 5,
+      "options": {"legend": {"calcs": [], "displayMode": "list", "placement": "bottom"}, "tooltip": {"mode": "single"}},
+      "title": "HTTP Status Codes",
+      "type": "timeseries",
+      "targets": [
+        {"datasource": {"type": "prometheus"}, "expr": "sum by (status_code) (rate(http_requests_total{job=\"cloudcare-backend\"}[5m]))", "legendFormat": "{{status_code}}"}
+      ]
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}}},
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+      "id": 6,
+      "options": {"legend": {"calcs": [], "displayMode": "list", "placement": "bottom"}, "tooltip": {"mode": "single"}},
+      "title": "Container CPU Usage",
+      "type": "timeseries",
+      "targets": [
+        {"datasource": {"type": "prometheus"}, "expr": "rate(container_cpu_usage_seconds_total{name=~\"cloudcare.*\"}[5m]) * 100", "legendFormat": "{{name}}"}
+      ]
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 38,
+  "tags": ["cloudcare", "operations"],
+  "templating": {"list": [{"current": {"selected": false, "text": "Prometheus", "value": "prometheus"}, "hide": 0, "includeAll": false, "name": "datasource", "options": [], "query": "prometheus", "refresh": 1, "type": "datasource"}]},
+  "time": {"from": "now-1h", "to": "now"},
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "CloudCare Operations Dashboard",
+  "uid": "cloudcare-main",
+  "version": 1
+}
+``

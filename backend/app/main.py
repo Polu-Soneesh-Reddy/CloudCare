@@ -6,6 +6,12 @@ from fastapi.responses import JSONResponse, RedirectResponse
 from sqlalchemy import text
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+try:
+    from prometheus_fastapi_instrumentator import Instrumentator
+    PROMETHEUS_ENABLED = True
+except ImportError:
+    PROMETHEUS_ENABLED = False
+
 from app.core.config import get_settings
 from app.db.base import Base
 from app.db.session import engine
@@ -32,6 +38,9 @@ async def lifespan(app: FastAPI):
         Base.metadata.create_all(bind=engine)
     except Exception as exc:
         print(f"Warning: Database initialization encountered an error: {exc}")
+    # Start Prometheus metrics collection
+    if PROMETHEUS_ENABLED:
+        Instrumentator().instrument(app).expose(app, include_in_schema=False, tags=["monitoring"])
     yield
 
 
