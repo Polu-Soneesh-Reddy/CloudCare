@@ -82,7 +82,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(http_requests_total{job=\"cloudcare-backend\"}[5m]))",
+          "expr": "sum(rate(http_requests_total[2m])) or vector(0)",
           "legendFormat": "Requests/s"
         }
       ]
@@ -295,7 +295,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum by (status) (rate(http_requests_total{job=\"cloudcare-backend\"}[5m]))",
+          "expr": "sum by (status) (rate(http_requests_total[2m]))",
           "legendFormat": "{{status}}"
         }
       ]
@@ -337,8 +337,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(container_cpu_usage_seconds_total{name=~\"cloudcare.*\"}[5m]) * 100",
-          "legendFormat": "{{name}}"
+          "expr": "rate(container_cpu_usage_seconds_total{name=~\"cloudcare.*\"}[2m]) * 100 or rate(container_cpu_usage_seconds_total{id=~\"/docker/.*\"}[2m]) * 100 or rate(process_cpu_seconds_total[2m]) * 100",
+          "legendFormat": "{{name}}{{id}}{{job}}"
         }
       ]
     }
