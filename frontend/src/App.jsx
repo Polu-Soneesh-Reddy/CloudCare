@@ -14,6 +14,7 @@ import PatientsPage from './pages/PatientsPage'
 import AnalyticsPage from './pages/AnalyticsPage'
 import NotificationsPage from './pages/NotificationsPage'
 import SettingsPage from './pages/SettingsPage'
+import AiClinicalPage from './pages/AiClinicalPage'
 
 // 404 Page
 function NotFoundPage() {
@@ -58,6 +59,7 @@ export default function App() {
             <Route path="/doctors" element={<DoctorsPage />} />
             <Route path="/queue" element={<QueuePage />} />
             <Route path="/patients" element={<PatientsPage />} />
+            <Route path="/ai-clinical" element={<AiClinicalPage />} />
             <Route path="/analytics" element={<AnalyticsPage />} />
             <Route path="/notifications" element={<NotificationsPage />} />
             <Route path="/settings" element={<SettingsPage />} />

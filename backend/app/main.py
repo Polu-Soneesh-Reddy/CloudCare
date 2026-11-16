@@ -17,6 +17,7 @@ from app.db.base import Base
 from app.db.session import engine
 import app.models  # noqa: F401 - ensure models are registered with Base.metadata
 from app.routers import (
+    ai,
     analytics,
     appointments,
     auth,
@@ -71,6 +72,7 @@ app.include_router(queue.router, prefix="/api/v1")
 app.include_router(analytics.router, prefix="/api/v1")
 app.include_router(notifications.router, prefix="/api/v1")
 app.include_router(clinic_settings.router, prefix="/api/v1")
+app.include_router(ai.router, prefix="/api/v1")
 
 # Prometheus metrics — must be called at module level, before app starts
 if PROMETHEUS_ENABLED:

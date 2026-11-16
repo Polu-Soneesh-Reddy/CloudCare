@@ -11,6 +11,7 @@ import {
   Settings,
   X,
   Activity,
+  Sparkles,
 } from 'lucide-react'
 import { notificationsApi } from '../../api/notifications'
 
@@ -45,6 +46,7 @@ export default function Sidebar({ isOpen, onClose }) {
     { label: 'Appointments', path: '/appointments', icon: Calendar },
     { label: 'Doctors', path: '/doctors', icon: Stethoscope },
     { label: 'Live Queue', path: '/queue', icon: Users },
+    { label: 'AI Clinical Center', path: '/ai-clinical', icon: Sparkles, badge: 'AI' },
     { label: 'Patients', path: '/patients', icon: UserRound },
     { label: 'Analytics', path: '/analytics', icon: BarChart3 },
     {
